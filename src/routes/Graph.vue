@@ -59,14 +59,14 @@ export default {
     }
   },
   computed: {
-    svgPatterns: function () {
+    // svgPatterns: function () {
     //  <defs>
     //   <pattern id="image" x="0%" y="0%" height="100%" width="100%"
     //             viewBox="0 0 512 512">
     //     <image x="0%" y="0%" width="512" height="512" xlink:href="https://cdn3.iconfinder.com/data/icons/people-professions/512/Baby-512.png"></image>
     //   </pattern>
     // </defs>
-    },
+    // },
     circles: function () {
       return this.packed.descendants()
         .filter((circle) => circle.data.depth >= 1)
@@ -82,15 +82,15 @@ export default {
       return text.length
     },
     scale: function () {
-//  let scale = d3.scaleSqrt()
-//           .domain([0, d.data.Employment_High])
-//           .range([0,d.r]);
+      //  let scale = d3.scaleSqrt()
+      //           .domain([0, d.data.Employment_High])
+      //           .range([0,d.r]);
     },
     redraw: function () {
       const data = {
         name: 'root',
         children: [...this.hashtags
-          // .filter((hashtag) => hashtag.messages.length > 1)
+          .filter((hashtag) => hashtag.messages.length > 1)
           .map((hashtag) => ({
             name: hashtag.hashtag,
             type: 'hashtag',
@@ -120,20 +120,21 @@ export default {
       // const r =  pack()
       //   .size([500, 500])
       //   .padding(10)(h)
-console.log(this.size)
+
+      const h = hierarchy(data)
+        .sum((d) => {
+          if (d.message) {
+            const message = this.messagesById[d.message.message_id]
+            // console.log(message.message)
+            return Math.sqrt(this.textLength(message.message))
+            // return 9
+          }
+        })
+        .sort((a, b) => b.value - a.value)
+
       const packed = pack()
           .size(this.size)
-          .padding(35)
-        (hierarchy(data)
-          .sum((d) => {
-            if (d.message) {
-              const message = this.messagesById[d.message.message_id]
-              // console.log(message.message)
-              return Math.sqrt(this.textLength(message.message))
-              // return 9
-            }
-          })
-          .sort((a, b) => b.value - a.value))
+          .padding(35)(h)
 
       this.packed = packed
     },

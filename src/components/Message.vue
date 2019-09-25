@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { format, formatDistance, formatRelative, subDays } from 'date-fns'
+import { formatRelative } from 'date-fns'
 
 export default {
   name: 'message',
@@ -40,6 +40,7 @@ export default {
           return `https://shock-forest-group.s3.eu-central-1.amazonaws.com/${path}`
         }
       }
+      return undefined
     },
     html: function () {
       if (!this.entities) {

@@ -12,6 +12,7 @@ export default {
   },
   props: {
     messages: Array,
+    hashtags: Array,
     locations: Object
   },
   created: function () {
