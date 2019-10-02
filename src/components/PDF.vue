@@ -1,6 +1,5 @@
 <template>
-  <!-- <iframe :src="`https://mozilla.github.com/pdf.js/web/viewer.html?file=${encodeURIComponent(url)}`" /> -->
-  <iframe src="https://mozilla.github.io/pdf.js/web/viewer.html" />
+  <iframe :src="`https://mozilla.github.com/pdf.js/web/viewer.html?file=${encodeURIComponent(url)}`" />
 </template>
 
 <script>
