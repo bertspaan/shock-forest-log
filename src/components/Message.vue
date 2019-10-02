@@ -8,6 +8,9 @@
       <img :src="thumbnail" />
     </div>
     <div class="text" v-html="html"></div>
+    <div v-if="data.message.document">
+      <code>{{ data.message.document.file_name }}</code>
+    </div>
   </div>
 </template>
 
@@ -47,7 +50,34 @@ export default {
         return this.text
       }
 
-      7 + this.thumbnail
+
+//       Vue.component('anchored-heading', {
+//   render: function (createElement) {
+//     // create kebab-case id
+//     var headingId = getChildrenTextContent(this.$slots.default)
+//       .toLowerCase()
+//       .replace(/\W+/g, '-')
+//       .replace(/(^-|-$)/g, '')
+
+//     return createElement(
+//       'h' + this.level,
+//       [
+//         createElement('a', {
+//           attrs: {
+//             name: headingId,
+//             href: '#' + headingId
+//           }
+//         }, this.$slots.default)
+//       ]
+//     )
+//   },
+//   props: {
+//     level: {
+//       type: Number,
+//       required: true
+//     }
+//   }
+// })
 
       const html = this.entities.reduce((html, entity) => {
         if (entity.type === 'hashtag') {

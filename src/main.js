@@ -2,17 +2,15 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import App from './App.vue'
 
-import Graph from './routes/Graph.vue'
-import Messages from './routes/Messages.vue'
-import Files from './routes/Files.vue'
-import URLs from './routes/URLs.vue'
-import Locations from './routes/Locations.vue'
+const Graph = () => import('./routes/Graph.vue')
+const Messages = () => import('./routes/Messages.vue')
+const Files = () => import('./routes/Files.vue')
+const URLs = () => import('./routes/URLs.vue')
+const Locations = () => import('./routes/Locations.vue')
 
 Vue.use(VueRouter)
 
 Vue.config.productionTip = false
-
-// path: '/video/:videoId/shot/:shotId',
 
 const router = new VueRouter({
   routes: [
@@ -24,7 +22,7 @@ const router = new VueRouter({
     {
       name: 'messages',
       path: '/messages',
-      component: Messages
+      component: Messages,
     },
     {
       name: 'files',
@@ -38,7 +36,7 @@ const router = new VueRouter({
     },
     {
       name: 'locations',
-      path: '/locations',
+      path: '/map',
       component: Locations
     }
   ]

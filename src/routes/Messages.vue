@@ -13,7 +13,8 @@ export default {
   props: {
     messages: Array,
     hashtags: Array,
-    locations: Object
+    locations: Object,
+    messagesById: Object
   }
 }
 </script>

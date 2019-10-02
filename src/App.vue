@@ -13,36 +13,65 @@
     </header>
     <main>
       <template v-if="!loading">
-        <router-view class="view"
+        <router-view
           :messages="messages"
+          :messagesById="messagesById"
           :hashtags="hashtags"
           :locations="locations"></router-view>
+        <template v-if="$route.query.messageId">
+          <MessageModal :message="messagesById[$route.query.messageId]" />
+        </template>
+        <template v-else-if="$route.query.hashtag">
+          <HashtagModal :hashtag="$route.query.hashtag" />
+        </template>
       </template>
     </main>
   </div>
 </template>
 
 <script>
+import { groupBy } from 'ramda'
 import fetch from './lib/fetch'
+
+import WebSockets from './components/mixins/WebSockets'
+
+import MessageModal from './components/MessageModal'
+import HashtagModal from './components/HashtagModal'
 
 export default {
   name: 'app',
+  mixins: [WebSockets],
   components: {
-
+    MessageModal,
+    HashtagModal
   },
   data: function () {
     return {
       loading: true,
       messages: undefined,
       hashtags: undefined,
-      locations: undefined
+      locations: undefined,
+      messagesById: undefined
     }
   },
-  mounted: async function () {
-    this.messages = await fetch('/messages')
-    this.locations = await fetch('/locations')
-    this.hashtags = await fetch('/hashtags')
-    this.loading = false
+  methods: {
+    fetchData: async function () {
+      this.messages = await fetch('/messages')
+      this.locations = await fetch('/locations')
+      this.hashtags = await fetch('/hashtags')
+      this.messagesById = Object.fromEntries(this.messages
+        .map((message) => [message.message.message_id, message]))
+
+      this.loading = false
+    }
+  },
+  created: function () {
+    this.$on('ws:message', () => {
+      this.fetchData()
+    })
+  },
+  mounted: function () {
+    this.fetchData()
   }
 }
 </script>
@@ -52,47 +81,44 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   margin: 0;
   padding: 0;
-  font-size: 18px;
+  font-size: 16px;
+  width: 100%;
+  height: 100%;
 }
 
-header, main {
-  top: 0;
-  left: 0;
+#app {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
 }
 
 header {
-  width: 100%;
-  position: absolute;
-  box-sizing: border-box;
-  padding: 10px;
-  z-index: 1001;
   display: flex;
   flex-direction: row;
   justify-content: center;
 }
 
 main {
-  position: absolute;
+  overflow-y: auto;
   width: 100%;
   height: 100%;
 }
 
 header ul {
+  width: 100%;
   margin: 0;
   padding: 0;
   background-color: #3278ff;
-  opacity: 0.95;
-  position: fixed;
   display: flex;
   align-items: center;
   justify-content: center;
   list-style-type: none;
-  padding: 0 2em;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
 }
 
 header ul li {
-  padding: .5em 1em;
+  padding: .2em .4em;
 }
 
 header a, header a:visited {
@@ -100,6 +126,6 @@ header a, header a:visited {
 }
 
 .heron {
-  width: 60px;
+  width: 30px;
 }
 </style>
