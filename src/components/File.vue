@@ -1,5 +1,10 @@
 <template>
   <div class="container">
+  <ul>
+    <li v-for="(url, index) in urls" :key="index">
+      <a :href="url">{{url}}</a>
+    </li>
+  </ul>
   <template v-if="type==='pdf'">
     <PDF :url="url" />
   </template>
@@ -18,19 +23,29 @@ export default {
     data: Object
   },
   computed: {
+    hasFiles: function () {
+      return this.data.files && this.data.files.length
+    },
     type: function () {
-      if (this.data.files.length === 1) {
+      if (this.hasFiles && this.data.files.length === 1) {
         const file = this.data.files[0]
         if (file.mime_type === 'application/pdf') {
           return 'pdf'
         }
-      } else {
-
       }
     },
     url: function () {
-      const path = this.data.files[0].path
-      return `https://shock-forest-group.s3.eu-central-1.amazonaws.com/${path}`
+      if (this.urls) {
+        return this.urls[0]
+      }
+    },
+    urls: function () {
+      if (this.hasFiles) {
+        return this.data.files.map((file) => {
+          const path = file.path
+          return `https://shock-forest-group.s3.eu-central-1.amazonaws.com/${path}`
+        })
+      }
     }
   }
 }
