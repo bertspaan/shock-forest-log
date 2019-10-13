@@ -28,14 +28,14 @@
           <router-link
             :to="{name: $route.name, query: {
               messageId: circle.data.messageId,
-              hashtag: circle.data.hashtag
+              hashtags: circle.data.name
             }}">
             <template v-if="circle.data.type === 'hashtag'">
-              <circle :r="circle.r" class="border" />
+              <circle :r="Math.max(0, circle.r)" class="border" />
             </template>
             <circle :r="circle.r" :id="`circle-${circle.data.name}`" class="circle" />
-            <template v-if="circle.data.type === 'message' && messagesById[circle.data.messageId].files">
-              <circle :r="circle.r - 2" :id="`circle-${circle.data.name}-file`" class="file" />
+            <template v-if="circle.data.type === 'message' && messagesById[circle.data.messageId] && messagesById[circle.data.messageId].files">
+              <circle :r="Math.max(0, circle.r - 2)" :id="`circle-${circle.data.name}-file`" class="file" />
             </template>
           </router-link>
           <template v-if="circle.data.type === 'hashtag'">
@@ -50,7 +50,7 @@
             />
             <router-link :to="{name: $route.name, query: {
               messageId: circle.data.messageId,
-              hashtag: circle.data.hashtag
+              hashtags: circle.data.name
             }}">
               <text>
                 <textPath :xlink:href="`#path-${circle.data.name}`"

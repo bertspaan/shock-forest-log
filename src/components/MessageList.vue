@@ -4,6 +4,11 @@
       <ol>
         <li v-for="data in messages" :key="data.message.message_id">
           <Message :data="data" />
+          <router-link :to="{name: $route.name, query: {
+              messageId: data.message.message_id
+          }}">
+          Details…
+          </router-link>
         </li>
       </ol>
     </template>

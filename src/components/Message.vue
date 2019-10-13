@@ -17,6 +17,8 @@
 <script>
 import { formatRelative } from 'date-fns'
 
+const FILES_URL = process.env.VUE_APP_FILES_URL
+
 export default {
   name: 'message',
   props: {
@@ -35,12 +37,12 @@ export default {
     thumbnail: function () {
       const thumb = this.data.files && this.data.files.filter((file) => file.thumb)[0]
       if (thumb) {
-        return `https://shock-forest-group.s3.eu-central-1.amazonaws.com/${thumb.path}`
+        return `${FILES_URL}/${thumb.path}`
       } else if (this.data.files) {
         const jpgs = this.data.files.filter((file) => file.mime_type === 'image/jpeg')
         if (jpgs.length) {
           const path = jpgs[jpgs.length - 1].path
-          return `https://shock-forest-group.s3.eu-central-1.amazonaws.com/${path}`
+          return `${FILES_URL}/${path}`
         }
       }
       return undefined
@@ -81,6 +83,7 @@ export default {
 
       const html = this.entities.reduce((html, entity) => {
         if (entity.type === 'hashtag') {
+
           return this.insertLink(entity, '#')
         } else if (entity.type === 'url') {
           const url = this.text.slice(entity.offset, entity.offset + entity.length)

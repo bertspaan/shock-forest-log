@@ -14,6 +14,8 @@
 <script>
 import PDF from './PDF.vue'
 
+const FILES_URL = process.env.VUE_APP_FILES_URL
+
 export default {
   name: 'file',
   components: {
@@ -43,7 +45,7 @@ export default {
       if (this.hasFiles) {
         return this.data.files.map((file) => {
           const path = file.path
-          return `https://shock-forest-group.s3.eu-central-1.amazonaws.com/${path}`
+          return `${FILES_URL}/${path}`
         })
       }
     }

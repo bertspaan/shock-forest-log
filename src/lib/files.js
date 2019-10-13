@@ -1,0 +1,1 @@
+// https://shock-forest-group.s3.eu-central-1.amazonaws.com/${thumb.path}

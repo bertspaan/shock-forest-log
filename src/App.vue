@@ -21,8 +21,12 @@
         <template v-if="$route.query.messageId">
           <MessageModal :message="messagesById[$route.query.messageId]" />
         </template>
-        <template v-else-if="$route.query.hashtag">
-          <HashtagModal :hashtag="$route.query.hashtag" />
+        <template v-else-if="$route.query.hashtags">
+          <HashtagModal
+            :messages="messages"
+            :messagesById="messagesById"
+            :hashtags="hashtags"
+            :selectedHashtags="$route.query.hashtags.split(',').map((hashtag) => `#${hashtag}`)" />
         </template>
       </template>
     </main>
