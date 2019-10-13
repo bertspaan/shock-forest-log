@@ -83,8 +83,8 @@ export default {
 
       const html = this.entities.reduce((html, entity) => {
         if (entity.type === 'hashtag') {
-
-          return this.insertLink(entity, '#')
+          const hashtag = this.text.slice(entity.offset, entity.offset + entity.length).slice(1)
+          return this.insertLink(entity, `#/?hashtags=${hashtag}`)
         } else if (entity.type === 'url') {
           const url = this.text.slice(entity.offset, entity.offset + entity.length)
           return this.insertLink(entity, url)
