@@ -5,9 +5,9 @@
       <span class="date">{{ formattedDate }}</span>
     </div>
     <div>
-      <img :src="thumbnail" />
+      <img class="thumb" :src="thumbnail" />
     </div>
-    <div class="text" v-html="html"></div>
+    <MessageText :data="data" />
     <div v-if="data.message.document">
       <code>{{ data.message.document.file_name }}</code>
     </div>
@@ -17,21 +17,17 @@
 <script>
 import { formatRelative } from 'date-fns'
 
+import MessageText from '../components/MessageText.vue'
+
 const FILES_URL = process.env.VUE_APP_FILES_URL
 
 export default {
   name: 'message',
+  components: {
+    MessageText
+  },
   props: {
     data: Object
-  },
-  methods: {
-    insertLink: function (entity, href) {
-      const before = this.text.slice(0, entity.offset)
-      const contents = this.text.slice(entity.offset, entity.offset + entity.length)
-      const after = this.text.slice(entity.offset + entity.length)
-
-      return `${before}<a href="${href}">${contents}</a>${after}`
-    }
   },
   computed: {
     thumbnail: function () {
@@ -46,64 +42,6 @@ export default {
         }
       }
       return undefined
-    },
-    html: function () {
-      if (!this.entities) {
-        return this.text
-      }
-
-
-//       Vue.component('anchored-heading', {
-//   render: function (createElement) {
-//     // create kebab-case id
-//     var headingId = getChildrenTextContent(this.$slots.default)
-//       .toLowerCase()
-//       .replace(/\W+/g, '-')
-//       .replace(/(^-|-$)/g, '')
-
-//     return createElement(
-//       'h' + this.level,
-//       [
-//         createElement('a', {
-//           attrs: {
-//             name: headingId,
-//             href: '#' + headingId
-//           }
-//         }, this.$slots.default)
-//       ]
-//     )
-//   },
-//   props: {
-//     level: {
-//       type: Number,
-//       required: true
-//     }
-//   }
-// })
-
-      const html = this.entities.reduce((html, entity) => {
-        if (entity.type === 'hashtag') {
-          const hashtag = this.text.slice(entity.offset, entity.offset + entity.length).slice(1)
-          return this.insertLink(entity, `#/?hashtags=${hashtag}`)
-        } else if (entity.type === 'url') {
-          const url = this.text.slice(entity.offset, entity.offset + entity.length)
-          return this.insertLink(entity, url)
-        } else if (entity.type === 'text_link') {
-          return this.insertLink(entity, entity.url)
-        } else {
-          // console.log({...entity})
-        }
-
-        return html
-      }, this.text)
-
-      return html
-    },
-    entities: function () {
-      return this.data.message.entities || this.data.message.caption_entities
-    },
-    text: function () {
-      return this.data.message.text || this.data.message.caption
     },
     formattedDate: function () {
       return formatRelative(new Date(this.data.message.date * 1000), new Date())
@@ -128,5 +66,9 @@ export default {
 
 .text {
   word-break: break-word;
+}
+
+.thumb {
+  width: 100%;
 }
 </style>
