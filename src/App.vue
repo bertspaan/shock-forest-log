@@ -71,11 +71,7 @@ export default {
   },
   methods: {
     fetchData: async function () {
-      const messages = await fetch('/messages')
-
-      this.messages = messages
-        .sort((a, b) => b.message.date - a.message.date)
-
+      this.messages = await fetch('/messages')
       this.hashtags = await fetch('/hashtags')
       this.loading = false
     }

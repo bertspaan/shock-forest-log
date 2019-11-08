@@ -2,7 +2,6 @@
   <svg ref="svg" xmlns="http://www.w3.org/2000/svg" :width="width+'px'" :height="height+'px'">
     <g v-if="bounds.minX">
       <line v-for="link in graph.links"
-        :key="link.source.index + link.target.index"
         :x1="coords[link.source.index].x" :y1="coords[link.source.index].y"
         :x2="coords[link.target.index].x" :y2="coords[link.target.index].y"
         stroke="black" stroke-width="2"/>
