@@ -1,19 +1,11 @@
 <template>
   <div id="app">
-    <header>
-      <ul>
-        <li><router-link :to="{ name: 'messages' }">Messages</router-link></li>
-        <li><router-link :to="{ name: 'files' }">Files</router-link></li>
-        <li><router-link :to="{ name: 'graph' }">
-          <img class="heron" src="./assets/heron.svg" />
-        </router-link></li>
-        <li><router-link :to="{ name: 'urls' }">URLs</router-link></li>
-        <li><router-link :to="{ name: 'locations' }">Locations</router-link></li>
-      </ul>
-    </header>
+    <Header />
     <main>
       <template v-if="!loading">
-        <router-view
+        <Hashtags :hashtags="hashtags" />
+        <Messages :messages="filteredMessages" />
+        <!-- <router-view
           :messages="messages"
           :messagesById="messagesById"
           :hashtags="hashtags"
@@ -27,46 +19,80 @@
             :messagesById="messagesById"
             :hashtags="hashtags"
             :selectedHashtags="$route.query.hashtags.split(',').map((hashtag) => `#${hashtag}`)" />
-        </template>
+        </template> -->
       </template>
     </main>
   </div>
 </template>
 
 <script>
-import { groupBy } from 'ramda'
 import fetch from './lib/fetch'
 
 import WebSockets from './components/mixins/WebSockets'
 
-import MessageModal from './components/MessageModal'
-import HashtagModal from './components/HashtagModal'
+import Header from './components/Header'
+import Hashtags from './components/Hashtags'
+import Messages from './components/Messages'
 
 export default {
   name: 'app',
   mixins: [WebSockets],
   components: {
-    MessageModal,
-    HashtagModal
+    Header,
+    Hashtags,
+    Messages
   },
   data: function () {
     return {
       loading: true,
       messages: undefined,
       hashtags: undefined,
-      locations: undefined,
-      messagesById: undefined
+      filters: {}
+    }
+  },
+  computed: {
+    messagesById: function () {
+      return Object.fromEntries(this.messages
+        .map((message) => [message.message.message_id, message]))
+    },
+    filteredMessages: function () {
+      return this.messages
+        .filter((message) => {
+          if (this.filters.hashtags) {
+            // console.log(this.filters.hashtags, message.hashtags)
+            // console.log(message.hashtags
+            //   .filter((hashtag) => this.filters.hashtags.includes(hashtag)))
+            return message.hashtags
+              .filter((hashtag) => this.filters.hashtags.includes(hashtag)).length
+          }
+          return true
+        })
     }
   },
   methods: {
     fetchData: async function () {
-      this.messages = await fetch('/messages')
-      this.locations = await fetch('/locations')
-      this.hashtags = await fetch('/hashtags')
-      this.messagesById = Object.fromEntries(this.messages
-        .map((message) => [message.message.message_id, message]))
+      const messages = await fetch('/messages')
 
+      this.messages = messages
+        .sort((a, b) => b.message.date - a.message.date)
+
+      this.hashtags = await fetch('/hashtags')
       this.loading = false
+    }
+  },
+  watch: {
+    '$route.query.hashtags': function (hashtags) {
+      if (hashtags) {
+        this.filters = {
+          ...this.filters,
+          hashtags: hashtags.split(',').map((hashtag) => `#${hashtag}`)
+        }
+      } else {
+        this.filters = {
+          ...this.filters,
+          hashtags: undefined
+        }
+      }
     }
   },
   created: function () {
@@ -81,13 +107,28 @@ export default {
 </script>
 
 <style>
+
+@font-face {
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Helvetia Neue'), url('assets/fonts/HelveticaNeueLTStd-Roman.otf') format('otf');
+}
+
+/* HelveticaNeueLTStd-Roman.otf
+HelveticaNeueLTStd-ExO.otf
+HelveticaNeueLTStd-Ex.otf
+HelveticaNeueLTStd-It.otf */
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family: "Helvetica Neue";
   margin: 0;
   padding: 0;
   font-size: 16px;
   width: 100%;
   height: 100%;
+
+  background-color: rgb(230, 230, 230);
 }
 
 #app {
@@ -97,39 +138,29 @@ body {
   height: 100vh;
 }
 
-header {
+/* header {
   display: flex;
   flex-direction: row;
   justify-content: center;
-}
+} */
 
 main {
   overflow-y: auto;
+  position: absolute;
+  top: 0;
   width: 100%;
   height: 100%;
-}
-
-header ul {
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  background-color: #3278ff;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  list-style-type: none;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
 }
 
-header ul li {
-  padding: .2em .4em;
+main > * {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
 }
 
-header a, header a:visited {
+a, a:visited {
   color: black;
 }
 
-.heron {
-  width: 30px;
-}
 </style>

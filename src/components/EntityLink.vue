@@ -36,5 +36,7 @@ export default {
 </script>
 
 <style scoped>
-
+ a {
+   word-break: break-all;
+ }
 </style>

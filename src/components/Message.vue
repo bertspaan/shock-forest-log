@@ -1,15 +1,32 @@
 <template>
-  <div>
+  <div class="message">
     <div class="meta">
       <span class="name">{{ data.message.from.first_name }}</span>
       <span class="date">{{ formattedDate }}</span>
+      <span class="hashtags">
+        <template v-for="(hashtag, index) in data.hashtags">
+          <router-link :to="{name: $route.name, query: {
+            hashtags: hashtag.slice(1)
+          }}" :key="index">{{ hashtag }}</router-link><template v-if="index < data.hashtags.length - 1">,
+          </template>
+        </template>
+      </span>
     </div>
-    <div>
-      <img class="thumb" :src="thumbnail" />
-    </div>
-    <MessageText :data="data" />
-    <div v-if="data.message.document">
-      <code>{{ data.message.document.file_name }}</code>
+    <div class="contents">
+      <div>
+        <img class="thumb" :src="thumbnail" />
+      </div>
+      <MessageText :data="data" />
+      <div v-if="data.message.document">
+        <code>{{ data.message.document.file_name }}</code>
+      </div>
+
+        <!-- <router-link :to="{name: $route.name, query: {
+            messageId: data.message.message_id
+        }}">
+        Details…
+        </router-link> -->
+
     </div>
   </div>
 </template>
@@ -17,7 +34,7 @@
 <script>
 import { formatRelative } from 'date-fns'
 
-import MessageText from '../components/MessageText.vue'
+import MessageText from './MessageText.vue'
 
 const FILES_URL = process.env.VUE_APP_FILES_URL
 
@@ -51,17 +68,37 @@ export default {
 </script>
 
 <style scoped>
+.message {
+  background-color: white;
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.2);
+}
+
 .meta {
   display: flex;
   justify-content: space-between;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+}
+
+.meta > * {
+  width: 100%;
+}
+
+.meta a, .meta a:visited {
+  color: black;
+}
+
+.meta > *:not(:last-child) {
+  border-right-style: solid;
+  border-right-width: 1px;
+}
+
+.contents, .meta > * {
+  padding: 1em;
 }
 
 .name {
   font-weight: bold;
-}
-
-.date {
-  opacity: 0.4;
 }
 
 .text {
