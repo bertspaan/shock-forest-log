@@ -27,6 +27,7 @@
 
 <script>
 import fetch from './lib/fetch'
+import filters from './lib/filters'
 
 import WebSockets from './components/mixins/WebSockets'
 
@@ -56,17 +57,18 @@ export default {
         .map((message) => [message.message.message_id, message]))
     },
     filteredMessages: function () {
+      const activeFilters = Object.entries(this.filters)
+        .filter(([filter, value]) => value !== undefined)
+        .filter(([filter, value]) => filters[filter])
+
+      if (!activeFilters.length) {
+        return this.messages
+      }
+
       return this.messages
-        .filter((message) => {
-          if (this.filters.hashtags) {
-            // console.log(this.filters.hashtags, message.hashtags)
-            // console.log(message.hashtags
-            //   .filter((hashtag) => this.filters.hashtags.includes(hashtag)))
-            return message.hashtags
-              .filter((hashtag) => this.filters.hashtags.includes(hashtag)).length
-          }
-          return true
-        })
+        .filter((message) =>
+          activeFilters
+            .every(([filter, value]) => filters[filter](value, message)))
     }
   },
   methods: {
@@ -74,20 +76,23 @@ export default {
       this.messages = await fetch('/messages')
       this.hashtags = await fetch('/hashtags')
       this.loading = false
+    },
+    setFilter: function (filter, value) {
+      this.filters = {
+        ...this.filters,
+        [filter]: value
+      }
     }
   },
   watch: {
+    '$route.query.type': function (type) {
+      this.setFilter('type', type)
+    },
     '$route.query.hashtags': function (hashtags) {
       if (hashtags) {
-        this.filters = {
-          ...this.filters,
-          hashtags: hashtags.split(',').map((hashtag) => `#${hashtag}`)
-        }
+        this.setFilter('hashtags', hashtags.split(',').map((hashtag) => `#${hashtag}`))
       } else {
-        this.filters = {
-          ...this.filters,
-          hashtags: undefined
-        }
+        this.setFilter('hashtags')
       }
     }
   },

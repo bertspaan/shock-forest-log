@@ -51,12 +51,16 @@ li {
 }
 
 .message {
-  padding: 1em;
+  margin: 1em;
 }
 
 .thread {
-  /* height: 1em;
+  height: 1em;
   width: 100%;
-  background-color: red; */
+
+  /* border-right-width: 2px;
+  border-right-style: solid;
+  border-right-color: black;
+  background-color: rebeccapurple; */
 }
 </style>

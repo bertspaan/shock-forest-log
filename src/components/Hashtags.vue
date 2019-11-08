@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { forceSimulation,  //forceManyBody, forceCollide, forceCenter,
+import { forceSimulation,  forceManyBody, forceCollide, forceCenter,
   forceLink, forceX, forceY } from 'd3-force'
 
 export default {
@@ -56,11 +56,18 @@ export default {
     this.graph = this.createGraph(this.hashtags)
 
     this.simulation = forceSimulation(this.graph.nodes)
-      // .force('charge', forceManyBody().strength((d) => -5))
-      // .force('collide', forceCollide(1).radius((d) => d.radius * 10 + 0.5))
-      .force('link', forceLink(this.graph.links).id((d) => d.id))
-      .force('x', forceX())
-      .force('y', forceY())
+      .force("charge", forceManyBody().strength(-3000))
+      .force("center", forceCenter(this.width / 2, this.height / 2))
+      .force("x", forceX(this.width / 2).strength(1))
+      .force("y", forceY(this.height / 2).strength(1))
+      .force("link", forceLink(this.graph.links).id(function(d) {return d.id; }).distance(50).strength(1))
+
+
+      // // .force('charge', forceManyBody().strength((d) => -5))
+      // // .force('collide', forceCollide(1).radius((d) => d.radius * 10 + 0.5))
+      // .force('link', forceLink(this.graph.links).id((d) => d.id))
+      // .force('x', forceX())
+      // .force('y', forceY())
   },
   watch: {
     hashtags: function (hashtags) {
