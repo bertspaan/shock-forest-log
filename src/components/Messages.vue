@@ -4,12 +4,14 @@
       <ol>
         <li v-for="data in messages" :key="data.message.message_id">
           <div class="message">
-            <Message :data="data" />
+            <Message :data="data" :depth="depth"
+              :hashtagMapping="hashtagMapping" />
           </div>
-          <div class="thread" v-if="depth > 0" />
+          <!-- <div class="thread" v-if="depth > 0" /> -->
           <message-list
             v-if="data.replies && data.replies.length"
-            :messages="data.replies" :depth="depth + 1" />
+            :messages="data.replies" :depth="depth + 1"
+            :hashtagMapping="hashtagMapping" />
         </li>
       </ol>
     </template>
@@ -26,6 +28,7 @@ export default {
   },
   props: {
     messages: Array,
+    hashtagMapping: Object,
     depth: {
       type: Number,
       default: 0
@@ -36,9 +39,12 @@ export default {
 
 <style scoped>
 .container {
-  margin: 0 auto;
-  max-width: 1000px;
+  pointer-events: all;
 }
+
+/* .container ol {
+
+} */
 
 ol {
   list-style-type: none;
@@ -47,11 +53,15 @@ ol {
 }
 
 li {
-  padding-bottom: 1em;
+  /* padding-bottom: 1em; */
+}
+
+.container > ol > li > .message {
+  margin: 1em;
 }
 
 .message {
-  margin: 1em;
+  /* margin: 1em; */
 }
 
 .thread {

@@ -3,6 +3,7 @@
     <template v-for="(textPart, index) in textParts">
       <span :key="`t${index}`">{{ textPart }}</span>
       <EntityLink v-if="index < textParts.length - 1" :key="`a${index}`"
+        :hashtagMapping="hashtagMapping"
         :entity="linkParts[index].entity"
         :text="linkParts[index].text"
       />
@@ -16,7 +17,8 @@ import EntityLink from '../components/EntityLink.vue'
 export default {
   name: 'message-text',
   props: {
-    data: Object
+    data: Object,
+    hashtagMapping: Object
   },
   components: {
     EntityLink

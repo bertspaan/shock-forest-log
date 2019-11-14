@@ -53,25 +53,12 @@ export default {
     window.removeEventListener('resize', this.handleResize)
   },
   created: function () {
-    this.graph = this.createGraph(this.hashtags)
-
-    this.simulation = forceSimulation(this.graph.nodes)
-      .force("charge", forceManyBody().strength(-3000))
-      .force("center", forceCenter(this.width / 2, this.height / 2))
-      .force("x", forceX(this.width / 2).strength(1))
-      .force("y", forceY(this.height / 2).strength(1))
-      .force("link", forceLink(this.graph.links).id(function(d) {return d.id; }).distance(50).strength(1))
-
-
-      // // .force('charge', forceManyBody().strength((d) => -5))
-      // // .force('collide', forceCollide(1).radius((d) => d.radius * 10 + 0.5))
-      // .force('link', forceLink(this.graph.links).id((d) => d.id))
-      // .force('x', forceX())
-      // .force('y', forceY())
+    this.createForceLayout()
   },
   watch: {
     hashtags: function (hashtags) {
       this.graph = this.createGraph(hashtags)
+      this.createForceLayout()
       this.simulation.alpha(1)
       this.simulation.restart()
     }
@@ -95,6 +82,17 @@ export default {
     }
   },
   methods: {
+    createForceLayout () {
+      this.graph = this.createGraph(this.hashtags)
+
+      this.simulation = forceSimulation(this.graph.nodes)
+        .force('charge', forceManyBody().strength(-30))
+        .force('center', forceCenter(this.width / 2, this.height / 2))
+        .force('x', forceX(this.width / 2).strength(1))
+        .force('y', forceY(this.height / 2).strength(1))
+        .force('link', forceLink(this.graph.links).id((d) => d.id).distance(50).strength(1))
+        .tick(500)
+    },
     handleResize: function () {
       this.width = this.$refs.svg.clientWidth
       this.height = this.$refs.svg.clientHeight
@@ -147,6 +145,11 @@ export default {
 </script>
 
 <style scoped>
+svg {
+  width: 100%;
+  height: 100%;
+}
+
 svg line {
   stroke-width: 0.1px;
 }

@@ -4,18 +4,20 @@
     }">
     <template v-if="!active">
       <div class="circle">
-        <a href="#" v-on:click="active = true">SFG</a>
+        <a class="shadow" @click="active = true">SFG</a>
       </div>
     </template>
     <template v-else>
       <div class="full">
-        <a href="#" v-on:click="active = false">Shock Forest Group</a>
+        <a href="#" @click="active = false">Shock Forest Group</a>
       </div>
       <ul class="menu">
         <li v-for="(filter, index) in contentFilters" :key="index">
-          <router-link :to="{name: $route.name, query: {
-            type: filter.type
-          }}">
+          <router-link
+            @click.native="active = false"
+            :to="{name: $route.name, query: {
+              type: filter.type
+            }}">
           {{ filter.text }}
           </router-link>
         </li>
@@ -41,12 +43,16 @@ export default {
           type: 'images'
         },
         {
+          text: 'documents',
+          type: 'documents'
+        },
+        {
           text: 'audio',
           type: 'audio'
         },
         {
-          text: 'videos',
-          type: 'videos'
+          text: 'video',
+          type: 'video'
         },
         {
           text: 'links',

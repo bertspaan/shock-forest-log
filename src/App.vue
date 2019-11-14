@@ -3,8 +3,14 @@
     <Header />
     <main>
       <template v-if="!loading">
-        <Hashtags :hashtags="hashtags" />
-        <Messages :messages="filteredMessages" />
+        <div class="hashtags-container">
+          <Hashtags :hashtags="hashtags" />
+        </div>
+        <div class="messages-container">
+          <Messages :messages="filteredMessages"
+            :hashtagMapping="hashtagMapping" />
+        </div>
+
         <!-- <router-view
           :messages="messages"
           :messagesById="messagesById"
@@ -48,6 +54,7 @@ export default {
       loading: true,
       messages: undefined,
       hashtags: undefined,
+      hashtagMapping: undefined,
       filters: {}
     }
   },
@@ -75,7 +82,18 @@ export default {
     fetchData: async function () {
       this.messages = await fetch('/messages')
       this.hashtags = await fetch('/hashtags')
+      this.hashtagMapping = await fetch('/hashtag-mapping')
       this.loading = false
+    },
+    updateFilters: function () {
+      if (this.$route.query.hashtags) {
+        const hashtags = this.$route.query.hashtags
+        this.setFilter('hashtags', hashtags.split(',').map((hashtag) => `#${hashtag}`))
+      } else {
+        this.setFilter('hashtags')
+      }
+
+      this.setFilter('type', this.$route.query.type)
     },
     setFilter: function (filter, value) {
       this.filters = {
@@ -86,14 +104,10 @@ export default {
   },
   watch: {
     '$route.query.type': function (type) {
-      this.setFilter('type', type)
+      this.updateFilters()
     },
     '$route.query.hashtags': function (hashtags) {
-      if (hashtags) {
-        this.setFilter('hashtags', hashtags.split(',').map((hashtag) => `#${hashtag}`))
-      } else {
-        this.setFilter('hashtags')
-      }
+      this.updateFilters()
     }
   },
   created: function () {
@@ -102,6 +116,7 @@ export default {
     })
   },
   mounted: function () {
+    this.updateFilters()
     this.fetchData()
   }
 }
@@ -110,16 +125,11 @@ export default {
 <style>
 
 @font-face {
-  font-family: 'Helvetica Neue';
+  font-family: "Helvetica Neue";
   font-style: normal;
   font-weight: normal;
-  src: local('Helvetia Neue'), url('assets/fonts/HelveticaNeueLTStd-Roman.otf') format('otf');
+  src: local('Helvetia Neue'), url('assets/fonts/helvetica-neue-roman.otf') format('otf');
 }
-
-/* HelveticaNeueLTStd-Roman.otf
-HelveticaNeueLTStd-ExO.otf
-HelveticaNeueLTStd-Ex.otf
-HelveticaNeueLTStd-It.otf */
 
 body {
   font-family: "Helvetica Neue";
@@ -139,26 +149,41 @@ body {
   height: 100vh;
 }
 
-/* header {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-} */
+.shadow {
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.2);
+}
 
-main {
-  overflow-y: auto;
+.hashtags-container {
   position: absolute;
   top: 0;
   width: 100%;
   height: 100%;
-  display: flex;
 }
 
-main > * {
-  width: 100%;
-  height: 100%;
+.messages-container {
+  position: absolute;
+  z-index: 500;
+  top: 0;
+  right: 0;
+  max-height: 100%;
   overflow-y: scroll;
+  width: 50%;
+  max-width: 100%;
 }
+
+@media (max-width: 768px){
+  .messages-container {
+    width: 100%;
+  }
+}
+
+@media (min-width: 1400px){
+ .messages-container {
+    width: 700px;
+  }
+}
+
+/* TODO: add width breakpoints for width */
 
 a, a:visited {
   color: black;
