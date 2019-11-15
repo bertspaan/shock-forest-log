@@ -2,10 +2,10 @@
   <router-link v-if="entity.type === 'hashtag'"
    :to="{name: $route.name, query: {
     hashtags: formatHashtag(text.slice(1))
-  }}">{{ text }}</router-link>
+  }}">{{ formatHashtag(text) }}</router-link>
   <a v-else-if="entity.type==='url'" :href="text">{{ text }}</a>
   <a v-else-if="entity.type==='url'" :href="entity.url">{{ text }}</a>
-  <span v-else>{{ formatHashtag(text) }}</span>
+  <span v-else>{{ text }}</span>
 </template>
 
 <script>

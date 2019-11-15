@@ -86,10 +86,10 @@ export default {
       this.graph = this.createGraph(this.hashtags)
 
       this.simulation = forceSimulation(this.graph.nodes)
-        .force('charge', forceManyBody().strength(-30))
+        .force('charge', forceManyBody().strength(-25))
         .force('center', forceCenter(this.width / 2, this.height / 2))
-        .force('x', forceX(this.width / 2).strength(1))
-        .force('y', forceY(this.height / 2).strength(1))
+        .force('x', forceX())
+        .force('y', forceY())
         .force('link', forceLink(this.graph.links).id((d) => d.id).distance(50).strength(1))
         .tick(500)
     },

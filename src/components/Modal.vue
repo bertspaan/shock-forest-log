@@ -3,7 +3,11 @@
     <div class="container">
       <slot></slot>
       <router-link :to="{
-        name: $route.name
+        name: $route.name,
+        query: {
+          ...$route.query,
+          file: undefined
+        }
       }" tag="button">Close</router-link>
 
     </div>
@@ -24,6 +28,7 @@ export default {
 
 <style scoped>
 .modal {
+  z-index: 2000;
   position: absolute;
   box-sizing: border-box;
   top: 0;
@@ -37,6 +42,8 @@ export default {
   background-color: white;
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 </style>

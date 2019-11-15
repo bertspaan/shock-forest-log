@@ -11,21 +11,15 @@
             :hashtagMapping="hashtagMapping" />
         </div>
 
-        <!-- <router-view
-          :messages="messages"
-          :messagesById="messagesById"
-          :hashtags="hashtags"
-          :locations="locations"></router-view>
-        <template v-if="$route.query.messageId">
-          <MessageModal :message="messagesById[$route.query.messageId]" />
+        <template v-if="$route.query.file">
+          <Modal>
+            <File :data="messagesById[$route.query.file]" />
+          </Modal>
         </template>
-        <template v-else-if="$route.query.hashtags">
-          <HashtagModal
-            :messages="messages"
-            :messagesById="messagesById"
-            :hashtags="hashtags"
-            :selectedHashtags="$route.query.hashtags.split(',').map((hashtag) => `#${hashtag}`)" />
-        </template> -->
+        <template v-else-if="$route.query.messageId">
+          <Modal>
+          </Modal>
+        </template>
       </template>
     </main>
   </div>
@@ -40,6 +34,8 @@ import WebSockets from './components/mixins/WebSockets'
 import Header from './components/Header'
 import Hashtags from './components/Hashtags'
 import Messages from './components/Messages'
+import File from './components/File'
+import Modal from './components/Modal'
 
 export default {
   name: 'app',
@@ -47,7 +43,9 @@ export default {
   components: {
     Header,
     Hashtags,
-    Messages
+    Messages,
+    Modal,
+    File
   },
   data: function () {
     return {

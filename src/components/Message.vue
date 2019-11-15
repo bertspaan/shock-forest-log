@@ -16,11 +16,13 @@
     </div>
     <div class="contents">
       <div v-if="thumbnail">
-        <img class="thumb" :src="thumbnail" />
+        <div class="thumb-container">
+          <img class="thumb" :src="thumbnail" />
+        </div>
       </div>
       <MessageText :data="data" :hashtagMapping="hashtagMapping" />
-      <div v-if="data.message.files && data.message.files.length">
-        <FileLink :files="data.files" />
+      <div v-if="data.files && data.files.length">
+        <FileLink :data="data" />
       </div>
     </div>
   </div>
@@ -37,7 +39,8 @@ const FILES_URL = process.env.VUE_APP_FILES_URL
 export default {
   name: 'message',
   components: {
-    MessageText
+    MessageText,
+    FileLink
   },
   props: {
     data: Object,
@@ -113,7 +116,20 @@ export default {
   word-break: break-word;
 }
 
-.thumb {
+.thumb-container {
+  height: 0;
+  overflow: hidden;
   width: 100%;
+  padding-top: 62.5%;
+  position: relative;
+}
+
+.thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 </style>

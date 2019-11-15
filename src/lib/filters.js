@@ -22,8 +22,11 @@ function type (filterValue, message) {
     filter = (message) => message.files && message.files.length &&
       message.files.some((file) => file.mime_type === 'application/pdf')
   } else if (filterValue === 'audio') {
+    filter = (message) => true
   } else if (filterValue === 'video') {
+    filter = (message) => true
   } else if (filterValue === 'links') {
+    filter = (message) => true
   }
 
   if (filter) {

@@ -16,7 +16,8 @@
           <router-link
             @click.native="active = false"
             :to="{name: $route.name, query: {
-              type: filter.type
+              type: filter.type,
+              // hashtags: $route.query.hashtags
             }}">
           {{ filter.text }}
           </router-link>

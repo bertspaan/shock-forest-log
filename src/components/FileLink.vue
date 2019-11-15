@@ -1,9 +1,18 @@
 <template>
-  <div class="modal">
-    <div class="container">
-     <!-- <code>{{ data.message.document.file_name }}</code> -->
-    </div>
-  </div>
+  <ul>
+    <li v-for="(file, index) in data.files" :key="index">
+      <code>
+       <router-link
+          @click.native="active = false"
+          :to="{name: $route.name, query: {
+            ...$route.query,
+            file: data.message.message_id
+          }}">
+        {{ file.file_name }}
+        </router-link>
+      </code>
+    </li>
+  </ul>
 </template>
 
 <script>
@@ -13,7 +22,7 @@ export default {
 
   },
   props: {
-    files: Array
+    data: Object
   }
 }
 </script>
