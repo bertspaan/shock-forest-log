@@ -36,7 +36,7 @@ export default {
       active: false,
       contentFilters: [
         {
-          text: 'messages',
+          text: 'hashtags',
           type: undefined
         },
         {
@@ -126,4 +126,24 @@ header.active {
 .menu li {
   padding-right: .5em;
 }
+
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    font-size: 20px;
+    line-height: 75px;
+  }
+
+  .circle {
+    width: 75px;
+    height: 75px;
+  }
+
+  .menu {
+    flex-direction: column;
+    padding-left: 20px;
+    line-height: 1.5em;
+  }
+}
+
 </style>

@@ -6,7 +6,12 @@
         <div class="hashtags-container">
           <Hashtags :hashtags="hashtags" />
         </div>
-        <div class="messages-container">
+        <div v-if="$route.query.hashtags || $route.query.type" class="messages-container">
+          <div class="close-messages shadow">
+            <router-link :to="{
+              name: $route.name,
+            }" >Close</router-link>
+          </div>
           <Messages :messages="filteredMessages"
             :hashtagMapping="hashtagMapping" />
         </div>
@@ -53,7 +58,8 @@ export default {
       messages: undefined,
       hashtags: undefined,
       hashtagMapping: undefined,
-      filters: {}
+      filters: {},
+      showMessages: false
     }
   },
   computed: {
@@ -80,6 +86,8 @@ export default {
     fetchData: async function () {
       this.messages = await fetch('/messages')
       this.hashtags = await fetch('/hashtags')
+
+      this.hashtags = this.hashtags.filter((hashtag) => hashtag.messages.length > 1)
       this.hashtagMapping = await fetch('/hashtag-mapping')
       this.loading = false
     },
@@ -181,10 +189,16 @@ body {
   }
 }
 
-/* TODO: add width breakpoints for width */
-
 a, a:visited {
   color: black;
+}
+
+.close-messages {
+  margin: 1em;
+  padding: 1em;
+  background-color: white;
+  display: flex;
+  justify-content: flex-end;
 }
 
 </style>

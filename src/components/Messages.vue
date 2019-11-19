@@ -42,35 +42,18 @@ export default {
   pointer-events: all;
 }
 
-/* .container ol {
-
-} */
-
 ol {
   list-style-type: none;
   margin: 0;
   padding: 0;
 }
 
-li {
-  /* padding-bottom: 1em; */
-}
-
 .container > ol > li > .message {
   margin: 1em;
-}
-
-.message {
-  /* margin: 1em; */
 }
 
 .thread {
   height: 1em;
   width: 100%;
-
-  /* border-right-width: 2px;
-  border-right-style: solid;
-  border-right-color: black;
-  background-color: rebeccapurple; */
 }
 </style>
