@@ -7,11 +7,11 @@
           <Hashtags :hashtags="hashtags" />
         </div>
         <div v-if="$route.query.hashtags || $route.query.type" class="messages-container">
-          <div class="close-messages shadow">
+          <!-- <div class="close-messages shadow">
             <router-link :to="{
               name: $route.name,
             }" >Close</router-link>
-          </div>
+          </div> -->
           <Messages :messages="filteredMessages"
             :hashtagMapping="hashtagMapping" />
         </div>

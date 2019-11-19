@@ -1,5 +1,7 @@
 <template>
-  <svg ref="svg" xmlns="http://www.w3.org/2000/svg" :width="width+'px'" :height="height+'px'">
+  <svg ref="svg" xmlns="http://www.w3.org/2000/svg"
+    @click="click"
+    :width="width+'px'" :height="height+'px'">
     <g v-if="bounds.minX">
       <line v-for="link in graph.links"
         :x1="coords[link.source.index].x" :y1="coords[link.source.index].y"
@@ -12,7 +14,7 @@
         <router-link :to="{name: $route.name, query: {
             hashtags: node.id.slice(1)
         }}">
-          <text>{{ node.id }}</text>
+          <text text-anchor="middle">{{ node.id }}</text>
         </router-link>
         <!-- <circle :r="node.radius" cx="0" cy="0" stroke="white" stroke-width="1" /> -->
       </g>
@@ -37,7 +39,7 @@ export default {
         nodes: [],
         links: []
       },
-      padding: 20,
+      padding: 40,
       width: 0,
       height: 0,
       simulation: null,
@@ -82,7 +84,16 @@ export default {
     }
   },
   methods: {
-    createForceLayout () {
+    click: function (event) {
+      if (event.target !== this.$refs.svg) {
+        return
+      }
+
+      this.$router.push({
+        name: this.$route.name,
+      })
+    },
+    createForceLayout: function () {
       this.graph = this.createGraph(this.hashtags)
 
       this.simulation = forceSimulation(this.graph.nodes)
@@ -91,7 +102,7 @@ export default {
         .force('x', forceX())
         .force('y', forceY())
         .force('link', forceLink(this.graph.links).id((d) => d.id).distance(50).strength(1))
-        .tick(500)
+        // .tick(500)
     },
     handleResize: function () {
       this.width = this.$refs.svg.clientWidth
@@ -151,10 +162,11 @@ svg {
 }
 
 svg line {
-  stroke-width: 0.1px;
+  stroke-width: 0.02px;
 }
 
 svg text {
   user-select: none;
+  font-size: 1.6em;
 }
 </style>
