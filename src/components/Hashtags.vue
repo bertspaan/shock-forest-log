@@ -3,6 +3,7 @@
     <svg ref="svg" xmlns="http://www.w3.org/2000/svg"
       v-if="width && height"
       @click="click"
+      @touchmove="drag($event)" @touchup="drop()"
       @mousemove="drag($event)" @mouseup="drop()"
       :width="width+'px'" :height="height+'px'">
       <g v-if="bounds.minX">
