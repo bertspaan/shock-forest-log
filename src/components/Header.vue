@@ -1,5 +1,6 @@
 <template>
   <header :class="{
+    padding: true,
     toggled: toggled
     }">
     <template v-if="!toggled">
@@ -70,14 +71,13 @@ export default {
 header {
   z-index: 1001;
   color: white;
-  padding: 10px;
   display: flex;
   width: 100%;
   box-sizing: border-box;
   justify-content: space-between;
 
-  line-height: 100px;
-  font-size: 30px;
+  line-height: 60px;
+  /* font-size: 20px; */
   transition: background-color .25s;
 
   pointer-events: none;
@@ -98,8 +98,8 @@ header.toggled {
 }
 
 .circle {
-  width: 100px;
-  height: 100px;
+  width: 60px;
+  height: 60px;
 }
 
 .menu {
@@ -115,7 +115,7 @@ header.toggled {
 }
 
 .menu li a {
-  opacity: 0.25;
+  opacity: 0.5;
 }
 
 .menu li a:hover {
@@ -129,7 +129,7 @@ header.toggled {
 @media (max-width: 768px) {
   header {
     flex-direction: column;
-    font-size: 20px;
+    /* font-size: 20px; */
     line-height: 75px;
   }
 
@@ -142,6 +142,7 @@ header.toggled {
     flex-direction: column;
     padding-left: 20px;
     line-height: 1.5em;
+    margin-bottom: 10px;
   }
 }
 

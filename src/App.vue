@@ -144,7 +144,7 @@ export default {
   font-family: "Helvetica Neue";
   font-style: normal;
   font-weight: normal;
-  src: local('Helvetia Neue'), url('assets/fonts/helvetica-neue-roman.otf') format('otf');
+  src: local('Helvetia Neue'), url('assets/fonts/helvetica-neue-roman.otf') format('opentype');
 }
 
 body {
@@ -161,8 +161,8 @@ body {
 #app {
   display: flex;
   flex-direction: column;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
 }
 
 a, a:visited {
@@ -171,11 +171,14 @@ a, a:visited {
 
 a.url {
   word-break: break-all;
-
 }
 
 .shadow {
   box-shadow: 0 5px 8px rgba(0, 0, 0, 0.2);
+}
+
+.padding {
+  padding: 10px;
 }
 
 .hashtags-container {
@@ -225,6 +228,10 @@ a.url {
 
   .close-messages-container {
     /* margin: 1em; */
+  }
+
+  .padding {
+   padding: 5px;
   }
 }
 

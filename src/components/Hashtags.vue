@@ -3,7 +3,6 @@
     <svg ref="svg" xmlns="http://www.w3.org/2000/svg"
       v-if="width && height"
       @click="click"
-      @touchmove="drag($event)" @touchup="drop()"
       @mousemove="drag($event)" @mouseup="drop()"
       :width="width+'px'" :height="height+'px'">
       <g v-if="bounds.minX">
@@ -22,7 +21,7 @@
           }}">
             <text text-anchor="middle">{{ node.id }}</text>
           </router-link>
-          <!-- <circle :r="node.radius" cx="0" cy="0" stroke="white" stroke-width="1" /> -->
+          <circle :r="node.radius" cx="0" cy="0" stroke="black" fill="none" stroke-width="1" />
         </g>
       </g>
     </svg>
@@ -32,6 +31,11 @@
 <script>
 import { forceSimulation,  forceManyBody, forceCollide, forceCenter,
   forceLink, forceX, forceY } from 'd3-force'
+
+import { groupBy } from 'ramda'
+
+// @touchmove="drag($event)" @touchend="drop()"
+// @touchstart="currentMove = {x: $event.touches[0].screenX, y: $event.touches[0].screenY, node: node}"
 
 export default {
   props: {
@@ -93,8 +97,13 @@ export default {
       if (this.currentMove) {
         this.currentMove.node.fx = this.currentMove.node.x - (this.currentMove.x - event.screenX) * (this.bounds.maxX - this.bounds.minX) / (this.width - 2 * this.padding)
         this.currentMove.node.fy = this.currentMove.node.y - (this.currentMove.y - event.screenY) * (this.bounds.maxY - this.bounds.minY) / (this.height - 2 * this.padding)
-        this.currentMove.x = event.screenX
-        this.currentMove.y = event.screenY
+        if (event.touches) {
+          this.currentMove.x = event.touches[0].screenX
+          this.currentMove.y = event.touches[0].screenY
+        } else {
+          this.currentMove.x = event.screenX
+          this.currentMove.y = event.screenY
+        }
       }
     },
     drop: function () {
@@ -126,15 +135,19 @@ export default {
         .force('center', forceCenter(this.width / 2, this.height / 2))
         .force('collision', forceCollide(10)
           .radius((d) => {
-            return d.radius * 3
+            return d.radius
           })
         )
         .force('charge', forceManyBody().strength(-50))
         .force('x', forceX(0))
         .force('y', forceY(0))
-        // .force('x', forceX(this.width / 2))
-        // .force('y', forceY(this.height / 2))
+        .force('x', forceX(this.width / 2))
+        .force('y', forceY(this.height / 2))
         .force('link', forceLink(this.graph.links).id((d) => d.id)
+          .strength((d) => {
+            // console.log(d)
+            return 1
+          })
           .distance(25))
     },
     restartSimulation: function () {
@@ -151,22 +164,46 @@ export default {
 
       this.restartSimulation()
     },
+    links: function (hashtags) {
+      const pairs = Object.values(this.hashtagsByMessage(hashtags))
+        .filter((messages) => messages.length > 1)
+        .map((messages) => {
+            return this.toPairs(messages)
+              .map(([source, target]) => ({
+                source,
+                target,
+                messages: messages.length
+              }))
+          }).flat()
+
+      console.log(pairs)
+
+      const bySourceTarget = groupBy((pair) => {
+        const source = pair.source < pair.target ? pair.source : pair.target
+        const target = pair.source >= pair.target ? pair.source : pair.target
+
+        return `${source}-${target}`
+      })
+
+    },
     createGraph: function (hashtags) {
+      // this.links(hashtags)
       return {
         nodes: hashtags.map((hashtag) => ({
           id: hashtag.hashtag,
           x: null, y: null,
-          radius: hashtag.hashtag.length
+          radius: hashtag.hashtag.length * 5.5
         })),
         links: Object.values(this.hashtagsByMessage(hashtags))
           .filter((messages) => messages.length > 1)
           .map((messages) => {
-            return this.toPairs(messages).map(([source, target]) => ({
-              source,
-              target,
-              messages: messages.length
-            }))
-        }).flat()
+            return this.toPairs(messages)
+              .map(([source, target]) => ({
+                source,
+                target,
+                messages: messages.length
+              }))
+          }).flat()
       }
     },
     hashtagsByMessage: function (hashtags) {
@@ -212,6 +249,6 @@ svg line {
 
 svg text {
   user-select: none;
-  font-size: 1.2em;
+  /* font-size: 1.2em; */
 }
 </style>

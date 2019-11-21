@@ -1,6 +1,6 @@
 <template>
-  <div class="modal">
-    <div class="container">
+  <div class="modal padding">
+    <div class="contents padding">
       <CloseButton :to="{
         name: $route.name,
         query: {
@@ -34,13 +34,13 @@ export default {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.8);
-  padding: 1em;
+
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.container {
+.contents {
   background-color: white;
   width: 100%;
   height: 100%;
@@ -48,7 +48,6 @@ export default {
   max-height: 95%;
   display: flex;
   flex-direction: column;
-  padding: 1em;
 }
 
 </style>
