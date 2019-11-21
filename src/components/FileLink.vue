@@ -3,7 +3,7 @@
     <li v-for="(file, index) in data.files" :key="index">
       <code>
        <router-link
-          @click.native="active = false"
+          class="url"
           :to="{name: $route.name, query: {
             ...$route.query,
             file: data.message.message_id
@@ -28,5 +28,10 @@ export default {
 </script>
 
 <style scoped>
-
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  padding-top: 1em;
+}
 </style>

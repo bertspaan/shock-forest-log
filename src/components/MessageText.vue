@@ -39,15 +39,11 @@ export default {
         } else {
           const entity = this.entities[index]
           const previousEntity = this.entities[index - 1]
-          // if (!previousEntity || !entity) {
-          //   console.log(index, this.entities.length, this.entities)
-          // }
           return this.text.slice(previousEntity.offset + previousEntity.length, entity.offset)
         }
       })
     },
     linkParts: function () {
-      // console.log(this.textParts)
       return this.entities.map((entity) => ({
         entity,
         text: this.text.slice(entity.offset, entity.offset + entity.length)

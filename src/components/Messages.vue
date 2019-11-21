@@ -7,11 +7,15 @@
             <Message :data="data" :depth="depth"
               :hashtagMapping="hashtagMapping" />
           </div>
-          <!-- <div class="thread" v-if="depth > 0" /> -->
-          <message-list
-            v-if="data.replies && data.replies.length"
-            :messages="data.replies" :depth="depth + 1"
-            :hashtagMapping="hashtagMapping" />
+          <template v-if="data.replies && data.replies.length">
+            <div class="thread" />
+            <message-list
+              :messages="data.replies" :depth="depth + 1"
+              :hashtagMapping="hashtagMapping" />
+          </template>
+          <template v-else-if="depth > 0">
+            <div class="thread" />
+          </template>
         </li>
       </ol>
     </template>
@@ -48,12 +52,15 @@ ol {
   padding: 0;
 }
 
-.container > ol > li > .message {
+.messages-container > .container > ol > li {
   margin: 1em;
 }
 
 .thread {
   height: 1em;
-  width: 100%;
+  width: calc(100% - 1em);
+  box-sizing: border-box;
+  border-right-width: 2px;
+  border-right-style: solid;
 }
 </style>

@@ -1,28 +1,28 @@
 <template>
   <div id="app">
-    <Header />
+    <Header :toggled="headerToggled" @toggle="toggleHeader" />
     <main>
       <template v-if="!loading">
         <div class="hashtags-container">
           <Hashtags :hashtags="hashtags" />
         </div>
         <div v-if="$route.query.hashtags || $route.query.type" class="messages-container">
-          <!-- <div class="close-messages shadow">
-            <router-link :to="{
-              name: $route.name,
-            }" >Close</router-link>
-          </div> -->
+          <CloseButton :to="{
+            name: $route.name,
+          }" />
           <Messages :messages="filteredMessages"
             :hashtagMapping="hashtagMapping" />
         </div>
-
         <template v-if="$route.query.file">
           <Modal>
             <File :data="messagesById[$route.query.file]" />
           </Modal>
         </template>
-        <template v-else-if="$route.query.messageId">
+        <template v-else-if="$route.query.messageId && messagesById[$route.query.messageId]">
           <Modal>
+            <Message
+              :hashtagMapping="hashtagMapping"
+              :data="messagesById[$route.query.messageId]" />
           </Modal>
         </template>
       </template>
@@ -38,9 +38,11 @@ import WebSockets from './components/mixins/WebSockets'
 
 import Header from './components/Header'
 import Hashtags from './components/Hashtags'
+import Message from './components/Message'
 import Messages from './components/Messages'
 import File from './components/File'
 import Modal from './components/Modal'
+import CloseButton from './components/CloseButton'
 
 export default {
   name: 'app',
@@ -48,13 +50,16 @@ export default {
   components: {
     Header,
     Hashtags,
+    Message,
     Messages,
     Modal,
-    File
+    File,
+    CloseButton
   },
   data: function () {
     return {
       loading: true,
+      headerToggled: false,
       messages: undefined,
       hashtags: undefined,
       hashtagMapping: undefined,
@@ -83,6 +88,9 @@ export default {
     }
   },
   methods: {
+    toggleHeader: function (toggled) {
+      this.headerToggled = toggled
+    },
     fetchData: async function () {
       this.messages = await fetch('/messages')
       this.hashtags = await fetch('/hashtags')
@@ -92,6 +100,8 @@ export default {
       this.loading = false
     },
     updateFilters: function () {
+      this.headerToggled = false
+
       if (this.$route.query.hashtags) {
         const hashtags = this.$route.query.hashtags
         this.setFilter('hashtags', hashtags.split(',').map((hashtag) => `#${hashtag}`))
@@ -109,10 +119,10 @@ export default {
     }
   },
   watch: {
-    '$route.query.type': function (type) {
+    '$route.query.type': function () {
       this.updateFilters()
     },
-    '$route.query.hashtags': function (hashtags) {
+    '$route.query.hashtags': function () {
       this.updateFilters()
     }
   },
@@ -155,6 +165,15 @@ body {
   height: 100vh;
 }
 
+a, a:visited {
+  color: black;
+}
+
+a.url {
+  word-break: break-all;
+
+}
+
 .shadow {
   box-shadow: 0 5px 8px rgba(0, 0, 0, 0.2);
 }
@@ -172,14 +191,40 @@ body {
   top: 0;
   right: 0;
   max-height: 100%;
-  overflow-y: scroll;
+  overflow-y: auto;
   width: 50%;
   max-width: 100%;
+}
+
+.circle {
+  pointer-events: all;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.circle a {
+  position: relative;
+  text-align: center;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+
+  border-radius: 50%;
+  background-color: black;
+}
+
+.circle a, .circle a:visited {
+  color: white;
+  text-decoration: none;
 }
 
 @media (max-width: 768px){
   .messages-container {
     width: 100%;
+  }
+
+  .close-messages-container {
+    /* margin: 1em; */
   }
 }
 
@@ -188,17 +233,4 @@ body {
     width: 700px;
   }
 }
-
-a, a:visited {
-  color: black;
-}
-
-.close-messages {
-  margin: 1em;
-  padding: 1em;
-  background-color: white;
-  display: flex;
-  justify-content: flex-end;
-}
-
 </style>

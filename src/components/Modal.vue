@@ -1,27 +1,26 @@
 <template>
   <div class="modal">
     <div class="container">
-      <slot></slot>
-      <router-link :to="{
+      <CloseButton :to="{
         name: $route.name,
         query: {
           ...$route.query,
-          file: undefined
+          file: undefined,
+          messageId: undefined
         }
-      }" tag="button">Close</router-link>
-
+      }" />
+      <slot></slot>
     </div>
   </div>
 </template>
 
 <script>
+import CloseButton from './CloseButton'
+
 export default {
   name: 'modal',
   components: {
-
-  },
-  props: {
-
+    CloseButton
   }
 }
 </script>
@@ -34,16 +33,22 @@ export default {
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(0, 0, 0, 0.8);
   padding: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .container {
   background-color: white;
   width: 100%;
   height: 100%;
+  max-width: 95%;
+  max-height: 95%;
   display: flex;
   flex-direction: column;
+  padding: 1em;
 }
 
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="message shadow" :style="{
-    marginLeft: `${depth * 5}px`
+    //marginLeft: `${depth * 5}px`
   }">
     <div class="meta">
       <span class="name">{{ data.message.from.first_name }}</span>
@@ -17,11 +17,17 @@
     <div class="contents">
       <div v-if="thumbnail">
         <div class="thumb-container">
-          <img class="thumb" :src="thumbnail" />
+          <router-link
+            :to="{name: $route.name, query: {
+              ...$route.query,
+              file: data.message.message_id
+            }}">
+            <img class="thumb" :src="thumbnail" />
+          </router-link>
         </div>
       </div>
       <MessageText :data="data" :hashtagMapping="hashtagMapping" />
-      <div v-if="data.files && data.files.length">
+      <div v-if="!thumbnail && data.files && data.files.length">
         <FileLink :data="data" />
       </div>
     </div>
@@ -88,7 +94,6 @@ export default {
 
 .hashtags {
   text-align: center;
-  font-weight: bold;
 }
 
 .meta > * {
@@ -108,10 +113,6 @@ export default {
   padding: 1em;
 }
 
-.name {
-  font-weight: bold;
-}
-
 .text {
   word-break: break-word;
 }
@@ -122,6 +123,7 @@ export default {
   width: 100%;
   padding-top: 62.5%;
   position: relative;
+  margin-bottom: 1em;
 }
 
 .thumb {

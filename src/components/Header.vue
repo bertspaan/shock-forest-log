@@ -1,23 +1,30 @@
 <template>
   <header :class="{
-    active: active
+    toggled: toggled
     }">
-    <template v-if="!active">
+    <template v-if="!toggled">
       <div class="circle">
-        <a class="shadow" @click="active = true">SFG</a>
+        <router-link class="shadow" @click.native="$emit('toggle', true)"
+          :to="{name: $route.name, query: $route.query}">
+          SFG
+        </router-link>
       </div>
     </template>
     <template v-else>
       <div class="full">
-        <a href="#" @click="active = false">Shock Forest Group</a>
+        <router-link class="shadow" @click.native="$emit('toggle', false)"
+          :to="{name: $route.name, query: $route.query}">
+          Shock Forest Group</router-link>
       </div>
       <ul class="menu">
         <li v-for="(filter, index) in contentFilters" :key="index">
           <router-link
-            @click.native="active = false"
+            :class="{
+              active: filter.type === $route.query.type
+            }"
+            @click.native="$emit('toggle', false)"
             :to="{name: $route.name, query: {
               type: filter.type,
-              // hashtags: $route.query.hashtags
             }}">
           {{ filter.text }}
           </router-link>
@@ -30,15 +37,13 @@
 <script>
 
 export default {
+  props: {
+    toggled: Boolean
+  },
   data: function () {
     return {
       fontSize: '50px',
-      active: false,
       contentFilters: [
-        {
-          text: 'hashtags',
-          type: undefined
-        },
         {
           text: 'images',
           type: 'images'
@@ -54,10 +59,6 @@ export default {
         {
           text: 'video',
           type: 'video'
-        },
-        {
-          text: 'links',
-          type: 'links'
         }
       ]
     }
@@ -87,7 +88,7 @@ header a, header a:visited {
   text-decoration: none;
 }
 
-header.active {
+header.toggled {
   background-color: black;
   pointer-events: all;
 }
@@ -97,22 +98,8 @@ header.active {
 }
 
 .circle {
-  pointer-events: all;
   width: 100px;
   height: 100px;
-  display: inline-block;
-  cursor: pointer;
-}
-
-.circle a {
-  position: relative;
-  text-align: center;
-  display: inline-block;
-  width: 100%;
-  height: 100%;
-
-  border-radius: 50%;
-  background-color: black;
 }
 
 .menu {
@@ -125,6 +112,18 @@ header.active {
 
 .menu li {
   padding-right: .5em;
+}
+
+.menu li a {
+  opacity: 0.25;
+}
+
+.menu li a:hover {
+  opacity: 0.75;
+}
+
+.menu li a.active {
+  opacity: 1;
 }
 
 @media (max-width: 768px) {
