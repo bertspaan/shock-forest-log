@@ -76,7 +76,7 @@ header {
   box-sizing: border-box;
   justify-content: space-between;
 
-  line-height: 60px;
+  line-height: 64px;
   /* font-size: 20px; */
   transition: background-color .25s;
 

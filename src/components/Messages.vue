@@ -53,7 +53,13 @@ ol {
 }
 
 .messages-container > .container > ol > li {
-  margin: 1em;
+  margin: 10px;
+}
+
+@media (max-width: 768px) {
+  .messages-container > .container > ol > li {
+    margin: 5px;
+  }
 }
 
 .thread {

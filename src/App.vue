@@ -181,6 +181,10 @@ a.url {
   padding: 10px;
 }
 
+.margin {
+  margin: 10px;
+}
+
 .hashtags-container {
   position: absolute;
   top: 0;
@@ -231,6 +235,10 @@ a.url {
   }
 
   .padding {
+   padding: 5px;
+  }
+
+  .margin {
    padding: 5px;
   }
 }
