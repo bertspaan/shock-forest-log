@@ -92,10 +92,6 @@ export default {
   border-bottom-width: 1px;
 }
 
-.hashtags {
-  text-align: center;
-}
-
 .meta > * {
   width: 100%;
 }

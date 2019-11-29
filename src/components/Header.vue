@@ -5,9 +5,9 @@
     }">
     <template v-if="!toggled">
       <div class="circle">
-        <router-link class="shadow" @click.native="$emit('toggle', true)"
+        <router-link @click.native="$emit('toggle', true)"
           :to="{name: $route.name, query: $route.query}">
-          SFG
+          <span>SFG</span>
         </router-link>
       </div>
     </template>
@@ -97,7 +97,7 @@ header.toggled {
   padding-left: 20px;
 }
 
-.circle {
+.circle a {
   width: 60px;
   height: 60px;
 }

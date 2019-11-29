@@ -1,17 +1,15 @@
 <template>
   <div class="container" ref="container">
     <svg ref="svg" xmlns="http://www.w3.org/2000/svg"
-      v-if="width && height"
       @click="click"
-      @mousemove="drag($event)" @mouseup="drop()"
       :width="width+'px'" :height="height+'px'"
       :viewBox="[-width / 2, -height / 2, width, height].join(' ')">
-      <g v-if="bounds.minX">
-        <line v-for="(link, index) in graph.links"
+      <g v-if="bounds.minX" :transform="transform">
+        <!-- <line v-for="(link, index) in graph.links"
           :key="`${link.source.id}-${link.target.id}${index}`"
           :x1="coords[link.source.index].x" :y1="coords[link.source.index].y"
           :x2="coords[link.target.index].x" :y2="coords[link.target.index].y"
-          stroke="black" stroke-width="2"/>
+          stroke="black" stroke-width="2"/> -->
         <g v-for="(node, index) in graph.nodes" :key="node.id"
           @mousedown="currentMove = {x: $event.screenX, y: $event.screenY, node: node}"
           :style="{
@@ -20,9 +18,14 @@
           <router-link :to="{name: $route.name, query: {
             hashtags: node.id.slice(1)
           }}">
-            <text alignment-baseline="middle" text-anchor="middle">{{ node.id }}</text>
+            <text alignment-baseline="middle" text-anchor="middle">
+              {{ node.id }}
+              <tspan>[{{ node.messages }}]</tspan>
+            </text>
           </router-link>
-          <circle :r="node.radius" cx="0" cy="0" stroke="black" fill="none" stroke-width="1" />
+          <template v-if="selected && selected.includes(node.id)">
+            <circle :r="node.radius" cx="0" cy="0" stroke="black" fill="none" stroke-width="1" />
+          </template>
         </g>
       </g>
     </svg>
@@ -32,15 +35,19 @@
 <script>
 import { forceSimulation,  forceManyBody, forceCollide, forceCenter,
   forceLink, forceX, forceY } from 'd3-force'
+import { zoom } from 'd3-zoom'
+import { select, event } from 'd3-selection'
 
 import { groupBy } from 'ramda'
 
+// @mousemove="drag($event)" @mouseup="drop()"
 // @touchmove="drag($event)" @touchend="drop()"
 // @touchstart="currentMove = {x: $event.touches[0].screenX, y: $event.touches[0].screenY, node: node}"
 
 export default {
   props: {
-    hashtags: Array
+    hashtags: Array,
+    selected: Array
   },
   components: {
 
@@ -51,11 +58,13 @@ export default {
         nodes: [],
         links: []
       },
-      padding: 100,
-      width: null,
-      height: null,
+      padding: 0,
+      width: 0,
+      height: 0,
       simulation: null,
-      currentMove: null
+      currentMove: null,
+      transform: null,
+      zoom: null
     }
   },
   mounted: function () {
@@ -64,6 +73,15 @@ export default {
 
     window.addEventListener('resize', this.handleResize)
     this.createForceLayout()
+
+    this.zoom = zoom()
+      .scaleExtent([0.1, 10])
+      .translateExtent([[-this.width, -this.height], [this.width, this.height]])
+      .on('zoom', () => {
+        this.transform = event.transform
+      })
+
+    select(this.$refs.svg).call(this.zoom)
   },
   beforeDestroy: function () {
     window.removeEventListener('resize', this.handleResize)
@@ -136,9 +154,7 @@ export default {
       this.simulation = forceSimulation(this.graph.nodes)
         // .alpha(0.02)
         .force('collision', forceCollide(10)
-          .radius((d) => {
-            return d.radius
-          })
+          .radius((d) => d.radius)
         )
         .force('link', forceLink(this.graph.links)
           .id((d) => d.id)
@@ -155,7 +171,8 @@ export default {
         return
       }
 
-      this.simulation.alpha(.01)
+      // this.simulation.alpha(.01)
+      this.simulation.alphaTarget(0)
       this.simulation.restart()
     },
     handleResize: function () {
@@ -194,11 +211,17 @@ export default {
         }))
     },
     createGraph: function (hashtags) {
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      ctx.font = '16px "Helvetica Neue"'
+      const radius = (str) => ctx.measureText(str).width / 2 + 5
+
       return {
         nodes: hashtags.map((hashtag) => ({
           id: hashtag.hashtag,
           x: null, y: null,
-          radius: hashtag.hashtag.length * 5.3
+          messages: hashtag.messages.length,
+          radius: radius(`${hashtag.hashtag} [${hashtag.messages.length}]`)
         })),
         links: this.links(hashtags)
       }
@@ -241,12 +264,16 @@ svg {
 }
 
 svg line {
-  stroke-width: 0.02px;
+  stroke-width: 0.2px;
 }
 
 svg text {
   user-select: none;
   fill: black;
   /* font-size: 1.2em; */
+}
+
+svg text tspan {
+  opacity: 0.3;
 }
 </style>

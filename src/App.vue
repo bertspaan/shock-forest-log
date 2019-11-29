@@ -4,7 +4,8 @@
     <main>
       <template v-if="!loading">
         <div class="hashtags-container">
-          <Hashtags :hashtags="hashtags" />
+          <Hashtags :hashtags="hashtags"
+            :selected="this.filters.hashtags" />
         </div>
         <div v-if="$route.query.hashtags || $route.query.type" class="messages-container">
           <CloseButton :to="{
@@ -149,6 +150,9 @@ export default {
 
 body {
   font-family: "Helvetica Neue";
+  line-height: 1.3;
+  letter-spacing: 0.3px;
+  webkit-font-smooth: antialiased;
   margin: 0;
   padding: 0;
   font-size: 16px;
@@ -203,21 +207,19 @@ a.url {
   max-width: 100%;
 }
 
-.circle {
+.circle a {
   pointer-events: all;
-  display: inline-block;
   cursor: pointer;
+  border-radius: 50%;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: black;
 }
 
-.circle a {
-  position: relative;
-  text-align: center;
-  display: inline-block;
-  width: 100%;
-  height: 100%;
-
-  border-radius: 50%;
-  background-color: black;
+.circle a span {
+  padding-top: 4px;
 }
 
 .circle a, .circle a:visited {
@@ -225,7 +227,7 @@ a.url {
   text-decoration: none;
 }
 
-@media (max-width: 768px){
+@media (max-width: 768px) {
   .messages-container {
     width: 100%;
   }

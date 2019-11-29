@@ -1,8 +1,10 @@
 <template>
-  <div class="close-messages-container">
-    <div class="close-messages circle">
-      <router-link class="shadow" :to="to" >✕</router-link>
-    </div>
+  <div class="circle close-messages-container padding">
+    <router-link :to="to" >
+      <span>
+      ✕
+      </span>
+    </router-link>
   </div>
 </template>
 
@@ -20,16 +22,15 @@ export default {
   position: fixed;
   top: 0;
   right: 0;
-  margin: 2em 1.5em;
   display: flex;
   justify-content: flex-end;
 }
 
-.close-messages {
+.circle a {
   width: 50px;
   height: 50px;
-  line-height: 50px;
-  font-size: 20px;
+  /* line-height: 50px; */
+  /* font-size: 20px; */
 }
 
 </style>
