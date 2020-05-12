@@ -2,6 +2,11 @@
   <div id="app">
     <Header :toggled="headerToggled" @toggle="toggleHeader" />
     <main>
+      <template v-if="$route.name === 'about'">
+        <Modal>
+          <About />
+        </Modal>
+      </template>
       <template v-if="!loading">
         <div class="hashtags-container">
           <Hashtags :hashtags="hashtags"
@@ -32,12 +37,12 @@
 </template>
 
 <script>
+/* eslint-disable */
 import fetch from './lib/fetch'
 import filters from './lib/filters'
 
-import WebSockets from './components/mixins/WebSockets'
-
 import Header from './components/Header'
+import About from './components/About'
 import Hashtags from './components/Hashtags'
 import Message from './components/Message'
 import Messages from './components/Messages'
@@ -47,9 +52,9 @@ import CloseButton from './components/CloseButton'
 
 export default {
   name: 'app',
-  mixins: [WebSockets],
   components: {
     Header,
+    About,
     Hashtags,
     Message,
     Messages,
@@ -126,11 +131,6 @@ export default {
     '$route.query.hashtags': function () {
       this.updateFilters()
     }
-  },
-  created: function () {
-    this.$on('ws:message', () => {
-      this.fetchData()
-    })
   },
   mounted: function () {
     this.updateFilters()
