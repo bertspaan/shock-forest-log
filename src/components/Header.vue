@@ -17,26 +17,37 @@
           :to="{name: $route.name, query: $route.query}">
           Shock Forest Group</router-link>
       </div>
-      <ul class="menu">
-        <li v-for="(filter, index) in contentFilters" :key="index">
-          <router-link
-            :class="{
-              active: filter.type === $route.query.type
-            }"
-            @click.native="$emit('toggle', false)"
-            :to="{name: $route.name, query: {
-              type: filter.type,
-            }}">
-          {{ filter.text }}
-          </router-link>
-        </li>
-      </ul>
+      <div class="menu">
+        <ul>
+          <li v-for="(filter, index) in contentFilters" :key="index">
+            <router-link
+              :class="{
+                active: filter.type === $route.query.type
+              }"
+              @click.native="$emit('toggle', false)"
+              :to="{name: $route.name, query: {
+                type: filter.type,
+              }}">
+            {{ filter.text }}
+            </router-link>
+          </li>
+        </ul>
+        <span>
+          —
+        </span>
+        <ul>
+          <li>
+            <router-link :class="{
+                active: $route.name === 'about'
+              }" :to="{name: 'about'}">about</router-link>
+          </li>
+        </ul>
+      </div>
     </template>
   </header>
 </template>
 
 <script>
-
 export default {
   props: {
     toggled: Boolean
@@ -103,6 +114,11 @@ header.toggled {
 }
 
 .menu {
+  display: flex;
+  flex-direction: row;
+}
+
+.menu ul {
   list-style-type: none;
   padding: 0;
   margin: 0;
@@ -110,19 +126,19 @@ header.toggled {
   flex-direction: row;
 }
 
-.menu li {
+.menu ul li, .menu span {
   padding-right: .5em;
 }
 
-.menu li a {
+.menu ul li a {
   opacity: 0.5;
 }
 
-.menu li a:hover {
+.menu ul li a:hover {
   opacity: 0.75;
 }
 
-.menu li a.active {
+.menu ul li a.active {
   opacity: 1;
 }
 

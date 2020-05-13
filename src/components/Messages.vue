@@ -2,7 +2,7 @@
   <div class="container">
     <template v-if="messages">
       <ol>
-        <li v-for="data in messages" :key="data.message.message_id">
+        <li v-for="data in messages.slice(0, displayCount)" :key="data.message.message_id">
           <div class="message">
             <Message :data="data" :depth="depth"
               :hashtagMapping="hashtagMapping" />
@@ -17,6 +17,11 @@
             <div class="thread" />
           </template>
         </li>
+        <infinite-loading v-if="depth === 0" @infinite="infiniteHandler">
+          <div slot="spinner"></div>
+          <div slot="no-more"></div>
+          <div slot="no-results"></div>
+        </infinite-loading>
       </ol>
     </template>
   </div>
@@ -37,6 +42,25 @@ export default {
       type: Number,
       default: 0
     },
+    pageSize: {
+      type: Number,
+      default: 10
+    }
+  },
+  data: function () {
+    return {
+      displayCount: this.depth === 0 ? this.pageSize : this.messages.length
+    }
+  },
+  methods: {
+    infiniteHandler: function (infinite) {
+      if (this.displayCount < this.messages.length) {
+        this.displayCount = Math.min(this.displayCount + this.pageSize, this.messages.length)
+        infinite.loaded()
+      } else {
+        infinite.complete()
+      }
+    }
   }
 }
 </script>
