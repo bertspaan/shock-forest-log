@@ -1,14 +1,7 @@
 <template>
-  <div class="modal padding">
+  <div class="modal padding" @click="close" ref="modal">
     <div class="contents padding">
-      <CloseButton :to="{
-        name: $route.name,
-        query: {
-          ...$route.query,
-          file: undefined,
-          messageId: undefined
-        }
-      }" />
+      <CloseButton :to="destination" />
       <slot></slot>
     </div>
   </div>
@@ -21,6 +14,28 @@ export default {
   name: 'modal',
   components: {
     CloseButton
+  },
+  props: {
+    closeRouteName: String,
+  },
+  computed: {
+    destination: function () {
+      return {
+        name: this.closeRouteName || this.$route.name,
+        query: {
+          ...this.$route.query,
+          file: undefined,
+          messageId: undefined
+        }
+      }
+    }
+  },
+  methods: {
+    close: function (event) {
+      if (event.target === this.$refs.modal) {
+        this.$router.push(this.destination)
+      }
+    }
   }
 }
 </script>
@@ -44,10 +59,11 @@ export default {
   background-color: white;
   width: 100%;
   height: 100%;
-  max-width: 95%;
+  max-width: 900px;
   max-height: 95%;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 
 </style>
