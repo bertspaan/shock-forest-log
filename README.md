@@ -1,6 +1,6 @@
 # Shock Forest Log
 
-[![screenshot.png]](https://shockforest.group/)
+[![Shock Forest Log](screenshot.png)](https://shockforest.group/)
 
 From the About page:
 
