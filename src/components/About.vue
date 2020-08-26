@@ -51,12 +51,13 @@
       Where does the bullet land?
     </p>
 
-    <router-link :to="{name: 'main'}">Explore the Shock Forest Log</router-link>
-
     <p><em>
       More information about the Shock Forest Group can be found on <a href="https://hethem.nl/en/Chapter-Two/Door-Nicolas-Jaar-Shock-Forest-Group">Het Hem’s website</a>.
       The source code of the Shock Forest Log is <a href="https://github.com/bertspaan/shock-forest-bot">available on GitHub</a>.
     </em></p>
+    <p>
+      <router-link :to="{name: 'main'}">Explore the Shock Forest Log</router-link>.
+    </p>
   </section>
 </template>
 
