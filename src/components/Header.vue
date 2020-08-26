@@ -32,7 +32,7 @@
             </router-link>
           </li>
         </ul>
-        <span>
+        <span class="divider">
           —
         </span>
         <ul>
@@ -105,7 +105,7 @@ header.toggled {
 }
 
 .full {
-  padding-left: 20px;
+  padding-left: 14px;
 }
 
 .circle a {
@@ -130,12 +130,13 @@ header.toggled {
   padding-right: .5em;
 }
 
-.menu ul li a {
-  opacity: 0.5;
+.menu ul li a,
+.menu .divider {
+  opacity: 0.7;
 }
 
 .menu ul li a:hover {
-  opacity: 0.75;
+  opacity: 0.8;
 }
 
 .menu ul li a.active {
@@ -145,8 +146,6 @@ header.toggled {
 @media (max-width: 768px) {
   header {
     flex-direction: column;
-    /* font-size: 20px; */
-    line-height: 75px;
   }
 
   .circle {
@@ -156,7 +155,7 @@ header.toggled {
 
   .menu {
     flex-direction: column;
-    padding-left: 20px;
+    padding-left: 14px;
     line-height: 1.5em;
     margin-bottom: 10px;
   }

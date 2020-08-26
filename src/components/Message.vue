@@ -1,9 +1,11 @@
 <template>
   <div class="message shadow" :style="{
-    //marginLeft: `${depth * 5}px`
+    marginLeft: `${depth}em`
   }">
     <div class="meta">
-      <span class="name">{{ data.message.from.first_name }}</span>
+      <span class="name" :style="{
+        width: `calc(50% - ${depth}em)`}
+      ">{{ data.message.from.first_name }}</span>
       <span class="date">{{ formattedDate }}</span>
     </div>
     <div v-if="depth === 0 && data.hashtags.length" class="hashtags">
@@ -92,8 +94,13 @@ export default {
   border-bottom-width: 1px;
 }
 
-.meta > * {
-  width: 100%;
+.meta .name {
+  flex-grow: 0;
+}
+
+.meta .date {
+  width: 50%;
+  flex-grow: 1;
 }
 
 .meta a, .meta a:visited {

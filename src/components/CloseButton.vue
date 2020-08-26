@@ -1,6 +1,6 @@
 <template>
   <div class="circle close-messages-container padding">
-    <router-link :to="to" >
+    <router-link :to="to" class="shadow-white">
       <span>
       ✕
       </span>
@@ -27,10 +27,11 @@ export default {
 }
 
 .circle a {
-  width: 50px;
-  height: 50px;
-  /* line-height: 50px; */
-  /* font-size: 20px; */
+  /* margin: 20px 0; */
+  margin: 14px 8px;
+  width: 30px;
+  height: 30px;
+  box-shadow: 0 0px 20px rgba(255, 255, 255, 0.5);
 }
 
 </style>

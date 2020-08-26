@@ -3,7 +3,7 @@
     <Header :toggled="headerToggled" @toggle="toggleHeader" />
     <main>
       <template v-if="$route.name === 'about'">
-        <Modal>
+        <Modal closeRouteName="main" scroll>
           <About />
         </Modal>
       </template>
@@ -125,6 +125,11 @@ export default {
     }
   },
   watch: {
+    '$route.name': function () {
+      if (this.$route.name === 'about') {
+        this.headerToggled = false
+      }
+    },
     '$route.query.type': function () {
       this.updateFilters()
     },
@@ -149,10 +154,10 @@ export default {
 }
 
 body {
+  position: absolute;
   font-family: "Helvetica Neue";
   line-height: 1.3;
   letter-spacing: 0.3px;
-  webkit-font-smooth: antialiased;
   margin: 0;
   padding: 0;
   font-size: 16px;
@@ -160,12 +165,19 @@ body {
   height: 100%;
 
   background-color: rgb(230, 230, 230);
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #app {
   display: flex;
   flex-direction: column;
   width: 100%;
+  height: 100%;
+}
+
+main {
   height: 100%;
 }
 
@@ -230,18 +242,6 @@ a.url {
 @media (max-width: 768px) {
   .messages-container {
     width: 100%;
-  }
-
-  .close-messages-container {
-    /* margin: 1em; */
-  }
-
-  .padding {
-   padding: 5px;
-  }
-
-  .margin {
-   padding: 5px;
   }
 }
 

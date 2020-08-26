@@ -2,30 +2,29 @@
   <div class="container" ref="container">
     <svg ref="svg" xmlns="http://www.w3.org/2000/svg"
       @click="click"
-      :width="width+'px'" :height="height+'px'"
-      :viewBox="[-width / 2, -height / 2, width, height].join(' ')">
+      :width="containerSize[0]+'px'" :height="containerSize[1]+'px'"
+      :viewBox="[-containerSize[0] / 2, -containerSize[1] / 2, containerSize[0], containerSize[1]].join(' ')">
       <g v-if="bounds.minX" :transform="transform">
-        <!-- <line v-for="(link, index) in graph.links"
-          :key="`${link.source.id}-${link.target.id}${index}`"
-          :x1="coords[link.source.index].x" :y1="coords[link.source.index].y"
-          :x2="coords[link.target.index].x" :y2="coords[link.target.index].y"
-          stroke="black" stroke-width="2"/> -->
         <g v-for="(node, index) in graph.nodes" :key="node.id"
-          @mousedown="currentMove = {x: $event.screenX, y: $event.screenY, node: node}"
+          @mouseover="nodeMouseOver(node.id)" @mouseout="nodeMouseOut(node.id)"
           :style="{
             transform: `translate(${coords[index].x}px, ${coords[index].y}px)`
           }">
+          <circle :r="node.radius + circlePadding" cx="0" cy="0"
+            :class="{
+              selected: nodeIdHovering === node.id || (selected && selected.includes(node.id)),
+              connected: connectedNodes.includes(node.id)
+            }" />
           <router-link :to="{name: $route.name, query: {
             hashtags: node.id.slice(1)
-          }}">
+          }}" :style="{
+            transform: `translate(0, 2px)`
+          }">
             <text alignment-baseline="middle" text-anchor="middle">
               {{ node.id }}
               <tspan>[{{ node.messages }}]</tspan>
             </text>
           </router-link>
-          <template v-if="selected && selected.includes(node.id)">
-            <circle :r="node.radius" cx="0" cy="0" stroke="black" fill="none" stroke-width="1" />
-          </template>
         </g>
       </g>
     </svg>
@@ -33,16 +32,10 @@
 </template>
 
 <script>
-import { forceSimulation,  forceManyBody, forceCollide, forceCenter,
-  forceLink, forceX, forceY } from 'd3-force'
 import { zoom } from 'd3-zoom'
 import { select, event } from 'd3-selection'
 
 import { groupBy } from 'ramda'
-
-// @mousemove="drag($event)" @mouseup="drop()"
-// @touchmove="drag($event)" @touchend="drop()"
-// @touchstart="currentMove = {x: $event.touches[0].screenX, y: $event.touches[0].screenY, node: node}"
 
 export default {
   props: {
@@ -58,42 +51,43 @@ export default {
         nodes: [],
         links: []
       },
-      padding: 0,
-      width: 0,
-      height: 0,
-      simulation: null,
-      currentMove: null,
+      circlePadding: 5,
+      nodeIdHovering: undefined,
+      containerSize: [0, 0],
+      graphSize: [900, 900],
       transform: null,
-      zoom: null
+      zoom: null,
+      worker: new Worker('worker.js')
     }
   },
   mounted: function () {
-    this.width = this.$refs.container.clientWidth
-    this.height = this.$refs.container.clientHeight
+    this.graph = this.createGraph(this.hashtags)
 
     window.addEventListener('resize', this.handleResize)
-    this.createForceLayout()
+    this.handleResize()
 
-    this.zoom = zoom()
-      .scaleExtent([0.1, 10])
-      .translateExtent([[-this.width, -this.height], [this.width, this.height]])
-      .on('zoom', () => {
-        this.transform = event.transform
-      })
+    this.createForceLayout()
 
     select(this.$refs.svg).call(this.zoom)
   },
   beforeDestroy: function () {
     window.removeEventListener('resize', this.handleResize)
   },
-  watch: {
-    hashtags: function (hashtags) {
-      this.graph = this.createGraph(hashtags)
-      this.createForceLayout()
-      this.restartSimulation()
-    }
-  },
   computed: {
+    connectedNodes: function () {
+      const selected = (this.nodeIdHovering && [this.nodeIdHovering])
+        || this.selected
+
+      if (selected && this.graph && this.graph.links) {
+        return this.graph.links.filter((link) => {
+          return selected.includes(link.source.id) || selected.includes(link.target.id)
+        })
+          .map((link) => ([link.source.id, link.target.id]))
+          .flat()
+      }
+
+      return []
+    },
     bounds: function () {
       return {
         minX: Math.min(...this.graph.nodes.map((n) => n.x)),
@@ -107,33 +101,26 @@ export default {
         return {
           x: node.x,
           y: node.y
-          // x: this.padding + (node.x - this.bounds.minX) * (this.width - 2 * this.padding) / (this.bounds.maxX - this.bounds.minX),
-          // y: this.padding + (node.y - this.bounds.minY) * (this.height - 2 * this.padding) / (this.bounds.maxY - this.bounds.minY)
         }
       })
     }
   },
   methods: {
-     drag: function (event) {
-      if (this.currentMove) {
-        this.currentMove.node.fx = this.currentMove.node.x - (this.currentMove.x - event.screenX) * (this.bounds.maxX - this.bounds.minX) / (this.width - 2 * this.padding)
-        this.currentMove.node.fy = this.currentMove.node.y - (this.currentMove.y - event.screenY) * (this.bounds.maxY - this.bounds.minY) / (this.height - 2 * this.padding)
-        if (event.touches) {
-          this.currentMove.x = event.touches[0].screenX
-          this.currentMove.y = event.touches[0].screenY
-        } else {
-          this.currentMove.x = event.screenX
-          this.currentMove.y = event.screenY
-        }
+    unitVector: function (p1, p2) {
+      const x = p2.x - p1.x
+      const y = p2.y - p1.y
+      const magnitude = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
+
+      return {
+        x: x / magnitude,
+        y: y / magnitude
       }
     },
-    drop: function () {
-      if (this.currentMove) {
-        delete this.currentMove.node.fx
-        delete this.currentMove.node.fy
-        this.currentMove = null
-        this.restartSimulation()
-      }
+    nodeMouseOver: function (nodeId) {
+      this.nodeIdHovering = nodeId
+    },
+    nodeMouseOut: function () {
+      this.nodeIdHovering = undefined
     },
     click: function (event) {
       if (event.target !== this.$refs.svg) {
@@ -147,39 +134,34 @@ export default {
       }
     },
     createForceLayout: function () {
-      this.padding = Math.min(this.width, this.height) * 0.02
-
-      this.graph = this.createGraph(this.hashtags)
-
-      this.simulation = forceSimulation(this.graph.nodes)
-        // .alpha(0.02)
-        .force('collision', forceCollide(10)
-          .radius((d) => d.radius)
-        )
-        .force('link', forceLink(this.graph.links)
-          .id((d) => d.id)
-          .strength((d) => {
-            return Math.min(1, d.connections * .2)
-          })
-          )
-        .force('charge', forceManyBody().strength(-50))
-        .force('x', forceX())
-        .force('y', forceY())
-    },
-    restartSimulation: function () {
-      if (!this.simulation) {
-        return
+      this.worker.onmessage = (event) => {
+        this.graph = event.data
       }
 
-      // this.simulation.alpha(.01)
-      this.simulation.alphaTarget(0)
-      this.simulation.restart()
+      this.worker.postMessage({
+        links: this.graph.links,
+        nodes: this.graph.nodes
+      })
     },
     handleResize: function () {
-      this.width = this.$refs.svg.clientWidth
-      this.height = this.$refs.svg.clientHeight
+      this.containerSize = [
+        this.$refs.container.clientWidth,
+        this.$refs.container.clientHeight
+      ]
 
-      this.restartSimulation()
+      if (!this.zoom) {
+        this.zoom = zoom()
+          .scaleExtent([0.75, 2.5])
+          .on('zoom', () => {
+            this.transform = event.transform
+          })
+      }
+
+      this.zoom
+        .translateExtent([
+          [-this.containerSize[0] - 500, -this.containerSize[1] - 500],
+          [this.containerSize[0] + 500, this.containerSize[1] + 500]
+        ])
     },
     links: function (hashtags) {
       const pairs = Object.values(this.hashtagsByMessage(hashtags))
@@ -261,6 +243,7 @@ export default {
 svg {
   width: 100%;
   height: 100%;
+  display: block;
 }
 
 svg line {
@@ -270,10 +253,28 @@ svg line {
 svg text {
   user-select: none;
   fill: black;
-  /* font-size: 1.2em; */
 }
 
 svg text tspan {
-  opacity: 0.3;
+  fill: #777;
+}
+
+svg circle {
+  stroke-width: 0;
+  fill: rgb(230, 230, 230);
+  stroke: rgb(230, 230, 230);
+  transition: stroke-width 0.2s ease;
+}
+
+svg circle.connected {
+  stroke: #888;
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+
+svg circle.selected {
+  stroke: black;
+  stroke-width: 1;
+  stroke-dasharray: none;
 }
 </style>

@@ -1,6 +1,10 @@
 <template>
   <div class="modal padding" @click="close" ref="modal">
-    <div class="contents padding">
+    <div :class="{
+      contents: true,
+      padding: true,
+      scroll: scroll
+    }">
       <CloseButton :to="destination" />
       <slot></slot>
     </div>
@@ -17,6 +21,7 @@ export default {
   },
   props: {
     closeRouteName: String,
+    scroll: Boolean
   },
   computed: {
     destination: function () {
@@ -53,6 +58,8 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+
+  padding: 30px 20px;
 }
 
 .contents {
@@ -63,7 +70,9 @@ export default {
   max-height: 95%;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
 }
 
+.scroll {
+  overflow-y: auto;
+}
 </style>

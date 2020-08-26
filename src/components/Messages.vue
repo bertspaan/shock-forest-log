@@ -8,13 +8,13 @@
               :hashtagMapping="hashtagMapping" />
           </div>
           <template v-if="data.replies && data.replies.length">
-            <div class="thread" />
+            <div class="thread-spacing" />
             <message-list
               :messages="data.replies" :depth="depth + 1"
               :hashtagMapping="hashtagMapping" />
           </template>
           <template v-else-if="depth > 0">
-            <div class="thread" />
+            <div class="thread-spacing" />
           </template>
         </li>
         <infinite-loading v-if="depth === 0" @infinite="infiniteHandler">
@@ -77,20 +77,10 @@ ol {
 }
 
 .messages-container > .container > ol > li {
-  margin: 10px;
+  margin: 40px 20px;
 }
 
-@media (max-width: 768px) {
-  .messages-container > .container > ol > li {
-    margin: 5px;
-  }
-}
-
-.thread {
+.thread-spacing {
   height: 1em;
-  width: calc(100% - 1em);
-  box-sizing: border-box;
-  border-right-width: 2px;
-  border-right-style: solid;
 }
 </style>

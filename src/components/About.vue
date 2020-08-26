@@ -1,9 +1,10 @@
 <template>
   <section>
+    <h2>The Shock Forest Log</h2>
     <p>
       From September 11, 2019 through December 21, 2019, a group of researchers, artists, and
       activists called the <L t="shockforestgroup" /> lived and worked at <L t="hethem" />,
-      a cultural institution in Zaandam, Netherlands. Het HEM is located in the former 0,50 caliber
+      a cultural institution in Zaandam, Netherlands. Het Hem is located in the former 0,50 caliber
       <L t="bullets" /> factory on the ex-military <L t="hembrug" /> terrain. Although
       the building was built in 1956, the company that occupied it, Artillerie Inrichtingen,
       also known as <L t="ai" />, had been supplying weapons
@@ -49,7 +50,13 @@
       ripples across global theaters of war. What stories lay camouflaged here?
       Where does the bullet land?
     </p>
-    <router-link :to="{name: 'main'}" tag="button">Explore the Shock Forest Log</router-link>
+
+    <router-link :to="{name: 'main'}">Explore the Shock Forest Log</router-link>
+
+    <p><em>
+      More information about the Shock Forest Group can be found on <a href="https://hethem.nl/en/Chapter-Two/Door-Nicolas-Jaar-Shock-Forest-Group">Het Hem’s website</a>.
+      The source code of the Shock Forest Log is <a href="https://github.com/bertspaan/shock-forest-bot">available on GitHub</a>.
+    </em></p>
   </section>
 </template>
 
